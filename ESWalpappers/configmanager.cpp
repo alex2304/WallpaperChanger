@@ -55,31 +55,37 @@ Config* ConfigManager::getConfigFromFile(QString filename){
     QSettings confFile(this->PATH + "/" + filename, this->FILE_FORMAT); //установка файла
     confFile.setIniCodec(codec);
     if (!checkConfigFile(confFile)) throw IncorrectConfigException();
-    Config* cfg;
-    confFile.beginGroup(IniMaster::MAIN_SEC);
-    cfg = new Config(confFile.value(mValues[IniMaster::name]).toString(),
-                     confFile.value(mValues[IniMaster::icon], "").toString(),
-                     confFile.value(mValues[IniMaster::time], 60).toInt(),
-                     confFile.value(mValues[IniMaster::folder]).toString(),
-                     confFile.value(mValues[IniMaster::subfolders], 0).toBool(),
-                     confFile.value(mValues[IniMaster::type]).toString());
-    confFile.endGroup();
-
-    if (cfg->getType() == Config::timelapse){
-        confFile.beginGroup(IniMaster::TIMELAPSE_SEC);
-        cfg->setTimelapseFolders(confFile.value(tValues[IniMaster::dayFolder]).toString(),
-                                 confFile.value(tValues[IniMaster::eveningFolder]).toString(),
-                                 confFile.value(tValues[IniMaster::nightFolder]).toString());
+    Config* newConf = new Config();
+    try {
+        confFile.beginGroup(IniMaster::MAIN_SEC);
+            newConf->setName(confFile.value(mValues[IniMaster::name]).toString());
+            newConf->setIcon(confFile.value(mValues[IniMaster::icon], "").toString());
+            newConf->setTime(confFile.value(mValues[IniMaster::time]).toInt());
+            newConf->setFolder(confFile.value(mValues[IniMaster::folder]).toString());
+            newConf->setSubfolders(confFile.value(mValues[IniMaster::subfolders], 0).toBool());
+            newConf->setType(confFile.value(mValues[IniMaster::type]).toString());
         confFile.endGroup();
+        if (newConf->getType() == Config::timelapse){
+            confFile.beginGroup(IniMaster::TIMELAPSE_SEC);
+            newConf->setTimelapseFolders(confFile.value(tValues[IniMaster::dayFolder]).toString(),
+                                     confFile.value(tValues[IniMaster::eveningFolder]).toString(),
+                                     confFile.value(tValues[IniMaster::nightFolder]).toString());
+            confFile.endGroup();
+        }
+    } catch (const exception& e){
+        delete newConf;
+        throw IncorrectConfigException();
     }
-
-    return cfg;
+    return newConf;
 }
 
 bool ConfigManager::checkConfigFile(QSettings& confFile){
     if (confFile.childGroups().contains(IniMaster::MAIN_SEC)){
         confFile.beginGroup(IniMaster::MAIN_SEC);
         bool mainOk = (confFile.contains(mValues[IniMaster::name]) && confFile.contains(mValues[IniMaster::folder]) && confFile.contains(mValues[IniMaster::type]));
+        QString tmString = confFile.value(mValues[IniMaster::time], "").toString();
+        int tmInt = tmString.toInt(&mainOk);
+        mainOk = (tmInt > 0 && tmInt < 172800);
         confFile.endGroup();
         if (mainOk){
             if (confFile.value(IniMaster::MAIN_SEC + "/" + mValues[IniMaster::type], "").toString() == "timelapse"){

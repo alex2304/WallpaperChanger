@@ -2,13 +2,13 @@
 #define CONFIG_H
 #include <QString>
 #include <QTime>
+#include <QDir>
 
 using namespace std;
 
 class Config
 {
     Q_ENUMS(Type)
-    Q_ENUMS(Timelapse)
 
 public:
     enum Type{
@@ -22,6 +22,8 @@ private:
     bool subfolders;
     Type type;
     QString dayFolder, eveningFolder, nightFolder;
+    const QString imgPath = "./img";
+
 public:
     //static const QTime morning = QTime(7, 0), day = QTime(), evening = QTime(), night = QTime();
     Config(QString name, QString icon, int time, QString folder, bool subfolders, QString type);
@@ -31,7 +33,8 @@ public:
     void setTime(int time) ;
     void setFolder(QString folder) ;
     void setSubfolders(bool subfolders) ;
-    void setType(Type type) ;
+    void setType(Type type);
+    void setType(QString type);
     void setTimelapseFolders(QString dayFolder, QString eveningFolder, QString nightFolder) ;
 
     QString getName();
@@ -43,6 +46,8 @@ public:
     QString getDayFolder();
     QString getEveningFolder();
     QString getNightFolder();
+    QStringList getAllImages();
+    QString getTimeFolder();
 };
 
 class IncorrectConfigException: public exception

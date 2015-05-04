@@ -11,9 +11,14 @@ ESWindow::ESWindow(QWidget *parent) :
     ui(new Ui::ESWindow)
 {
     ui->setupUi(this);
+    this->trayActiveImage = QIcon(iconPath + iconActive + iconFormat);
+    this->trayDeactiveImage = QIcon(iconPath + iconDeactive + iconFormat);
     this->imgManager = new ImageManager();
     this->confManager = new ConfigManager();
+    QTimer* timer = new QTimer(this); //создание таймера
+    connect(timer, SIGNAL(timeout()), this, SLOT(nextImage())); //и подключение к нему обработчика
     imgManager->setPresets(confManager->getConfigsFromFiles()); //чтение и установка пользовательских пресетов
+    imgManager->setTimer(timer);
     this->buildTrayMenu(false); //создание и настройка контекстного меню
     this->showTrayIcon(); //создание иконки для трея и вывод её в трей
 }
@@ -22,6 +27,7 @@ ESWindow::~ESWindow()
 {
     delete ui;
     clearFilterActions();
+    delete filterGroup;
     delete confManager;
     delete imgManager;
     delete trayIconMenu;
@@ -30,6 +36,7 @@ ESWindow::~ESWindow()
     delete autoLoadAction;
     delete refreshAction;
     delete quitAction;
+    delete timer;
 }
 
 void ESWindow::clearFilterActions(){
@@ -46,10 +53,11 @@ QAction* ESWindow::getQActionFromConfig(Config* conf){
         QString param = conf->getName();
         if (param != NULL){
             result = new QAction(param, this);
+            result->setActionGroup(filterGroup);
             if ((param = conf->getIcon()) != ""){
                 result->setIcon(QIcon(iconPath + param + iconFormat));
             } else {
-                result->setIcon(QIcon(iconPath + "icon1" + iconFormat));
+                result->setIcon(trayActiveImage);
             }
             result->setCheckable(true);
             result->setMenuRole(QAction::TextHeuristicRole);
@@ -60,6 +68,8 @@ QAction* ESWindow::getQActionFromConfig(Config* conf){
 
 void ESWindow::buildActions(std::vector<Config*> configs){
     clearFilterActions();
+    filterGroup = new QActionGroup(this);
+    filterGroup->setExclusive(true);
     for (int i = 0; i < configs.size(); i++){
         QAction* action = getQActionFromConfig(configs[i]);
         if (action != NULL) filterActions.push_back(action);
@@ -67,9 +77,12 @@ void ESWindow::buildActions(std::vector<Config*> configs){
     //создание элементов меню управления
     changeAction = new QAction("Следующее изображение", this);
     changeAction->setIcon(QIcon(iconPath + "next" + iconFormat));
+    changeAction->setShortcut(QKeySequence("Ctrl+Alt+Q"));
     refreshAction = new QAction("Обновить конфигурацию", this);
     refreshAction->setIcon(QIcon(iconPath + "refresh4" + iconFormat));
     autoLoadAction = new QAction("Запускать вместе с системой", this);
+    autoLoadAction->setCheckable(true);
+    autoLoadAction->setChecked(isInAutoload());
     quitAction = new QAction("Выход", this);
 }
 
@@ -81,9 +94,9 @@ void ESWindow::bindActions(){
         trayIconMenu->addAction(*it);
     }
     //задание действий на элементы управления
-    //connect (changeAction, SIGNAL(triggered()), this, SLOT(nextImage())); //функцию сделать
+    connect (changeAction, SIGNAL(triggered()), this, SLOT(nextImage())); //функцию сделать
     connect (refreshAction, SIGNAL(triggered()), this, SLOT(updateConfigs()));
-    //connect (autoLoadAction, SIGNAL(triggered()), this, SLOT(autoLoad())); //функцию сделать
+    connect (autoLoadAction, SIGNAL(triggered()), this, SLOT(autoLoadChange())); //функцию сделать
     connect (quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     //построение меню
     trayIconMenu->addSeparator();
@@ -96,6 +109,8 @@ void ESWindow::bindActions(){
 
 void ESWindow::updateConfigs(){
     buildTrayMenu(true);
+    imgManager->setPresets(confManager->getConfigs());
+    trayIcon->setIcon(trayDeactiveImage);
     trayIcon->setContextMenu(trayIconMenu);
 }
 
@@ -103,10 +118,16 @@ void ESWindow::setPreset(){
     for (std::vector<QAction*>::iterator it = filterActions.begin(); it != filterActions.end(); it++){
         if ((*it)->isChecked()){
             QString c = (*it)->text();
-            this->imgManager->setCurrPreset((*it)->text());
+            if (this->imgManager->setCurrPreset((*it)->text())) trayIcon->setIcon(trayActiveImage);
             break;
         }
     }
+}
+
+void ESWindow::nextImage()
+{
+    if (this->imgManager != NULL)
+        this->imgManager->nextWallpaper();
 }
 
 void ESWindow::buildTrayMenu(bool menuFromFile)
@@ -121,8 +142,7 @@ void ESWindow::buildTrayMenu(bool menuFromFile)
 void ESWindow::showTrayIcon(){
     //cоздание экземпляра класса и задание его свойств...
     trayIcon = new QSystemTrayIcon(this);
-    QIcon trayImage(iconPath + "icon1.png");
-    trayIcon->setIcon(trayImage);
+    trayIcon->setIcon(trayDeactiveImage);
     trayIcon->setContextMenu(trayIconMenu);
 
     //подключение обработчика клика по иконке...
@@ -162,6 +182,21 @@ void ESWindow::changeEvent(QEvent *event)
         {
             this->hide();
         }
+    }
+}
+
+bool ESWindow::isInAutoload(){
+    QSettings regEdit("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\CurrentVersion\\Run", QSettings::NativeFormat);
+    return (regEdit.value("ESWallpaper", "") != "");
+}
+
+void ESWindow::autoLoadChange(){
+    QSettings regEdit("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\CurrentVersion\\Run", QSettings::NativeFormat);
+    if (autoLoadAction->isChecked()){
+        QString path = QFileInfo("ESWallpaper.exe").absoluteFilePath().replace("/", "\\");
+        regEdit.setValue("ESWallpaper", path);
+    } else {
+        regEdit.remove("ESWallpaper");
     }
 }
 

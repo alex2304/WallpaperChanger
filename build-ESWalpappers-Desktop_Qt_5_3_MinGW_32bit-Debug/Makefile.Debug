@@ -114,7 +114,15 @@ compiler_rcc_make_all: debug/qrc_resources.cpp
 compiler_rcc_clean:
 	-$(DEL_FILE) debug\qrc_resources.cpp
 debug/qrc_resources.cpp: ../ESWalpappers/res/resources.qrc \
-		../ESWalpappers/icon1.png
+		../ESWalpappers/lena.png \
+		../ESWalpappers/refresh1.png \
+		../ESWalpappers/alisa.png \
+		../ESWalpappers/icon_active.png \
+		../ESWalpappers/refresh4.png \
+		../ESWalpappers/next.png \
+		../ESWalpappers/icon_deactive.png \
+		../ESWalpappers/refresh.png \
+		../ESWalpappers/refresh2.png
 	C:\Qt\5.3\mingw482_32\bin\rcc.exe -name resources ..\ESWalpappers\res\resources.qrc -o debug\qrc_resources.cpp
 
 compiler_moc_header_make_all: debug/moc_eswindow.cpp
@@ -239,6 +247,12 @@ debug/moc_eswindow.cpp: C:/Qt/5.3/mingw482_32/include/QtWidgets/QMainWindow \
 		C:/Qt/5.3/mingw482_32/include/QtCore/QFileInfoList \
 		C:/Qt/5.3/mingw482_32/include/QtCore/QFileInfo \
 		../ESWalpappers/imagemanager.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/QTimer \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qtimer.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qbasictimer.h \
+		C:/Qt/5.3/mingw482_32/include/QtWidgets/QActionGroup \
+		C:/Qt/5.3/mingw482_32/include/QtWidgets/qactiongroup.h \
+		C:/Qt/5.3/mingw482_32/include/QtWidgets/qaction.h \
 		../ESWalpappers/eswindow.h
 	C:\Qt\5.3\mingw482_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.3/mingw482_32/mkspecs/win32-g++ -I"E:/Work&Study/6 semester/Projects/WallpaperChanger(ES)/ESWalpappers" -IC:/Qt/5.3/mingw482_32/include -IC:/Qt/5.3/mingw482_32/include/QtWidgets -IC:/Qt/5.3/mingw482_32/include/QtGui -IC:/Qt/5.3/mingw482_32/include/QtCore -I. ..\ESWalpappers\eswindow.h -o debug\moc_eswindow.cpp
 
@@ -382,6 +396,12 @@ debug/main.o: ../ESWalpappers/main.cpp ../ESWalpappers/eswindow.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/QFileInfoList \
 		C:/Qt/5.3/mingw482_32/include/QtCore/QFileInfo \
 		../ESWalpappers/imagemanager.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/QTimer \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qtimer.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qbasictimer.h \
+		C:/Qt/5.3/mingw482_32/include/QtWidgets/QActionGroup \
+		C:/Qt/5.3/mingw482_32/include/QtWidgets/qactiongroup.h \
+		C:/Qt/5.3/mingw482_32/include/QtWidgets/qaction.h \
 		C:/Qt/5.3/mingw482_32/include/QtWidgets/QApplication \
 		C:/Qt/5.3/mingw482_32/include/QtWidgets/qapplication.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/qcoreapplication.h \
@@ -511,11 +531,15 @@ debug/eswindow.o: ../ESWalpappers/eswindow.cpp ../ESWalpappers/eswindow.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/QFileInfoList \
 		C:/Qt/5.3/mingw482_32/include/QtCore/QFileInfo \
 		../ESWalpappers/imagemanager.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/QTimer \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qtimer.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qbasictimer.h \
+		C:/Qt/5.3/mingw482_32/include/QtWidgets/QActionGroup \
+		C:/Qt/5.3/mingw482_32/include/QtWidgets/qactiongroup.h \
+		C:/Qt/5.3/mingw482_32/include/QtWidgets/qaction.h \
 		ui_eswindow.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/QVariant \
 		C:/Qt/5.3/mingw482_32/include/QtWidgets/QAction \
-		C:/Qt/5.3/mingw482_32/include/QtWidgets/qaction.h \
-		C:/Qt/5.3/mingw482_32/include/QtWidgets/qactiongroup.h \
 		C:/Qt/5.3/mingw482_32/include/QtWidgets/QApplication \
 		C:/Qt/5.3/mingw482_32/include/QtWidgets/qapplication.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/qcoreapplication.h \
@@ -637,7 +661,10 @@ debug/configmanager.o: ../ESWalpappers/configmanager.cpp ../ESWalpappers/configm
 		C:/Qt/5.3/mingw482_32/include/QtCore/qsharedpointer.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/qsharedpointer_impl.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/QFileInfoList \
-		C:/Qt/5.3/mingw482_32/include/QtCore/QFileInfo
+		C:/Qt/5.3/mingw482_32/include/QtCore/QFileInfo \
+		C:/Qt/5.3/mingw482_32/include/QtCore/QTextCodec \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qtextcodec.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/QByteArray
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\configmanager.o ..\ESWalpappers\configmanager.cpp
 
 debug/config.o: ../ESWalpappers/config.cpp ../ESWalpappers/config.h \
@@ -696,7 +723,17 @@ debug/config.o: ../ESWalpappers/config.cpp ../ESWalpappers/config.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/qisenum.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/qobject_impl.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/qhash.h \
-		C:/Qt/5.3/mingw482_32/include/QtCore/qpair.h
+		C:/Qt/5.3/mingw482_32/include/QtCore/qpair.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/QDir \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qdir.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qfileinfo.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qfile.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qfiledevice.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qiodevice.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qstringlist.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qdatastream.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qregexp.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qstringmatcher.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\config.o ..\ESWalpappers\config.cpp
 
 debug/imagemanager.o: ../ESWalpappers/imagemanager.cpp ../ESWalpappers/imagemanager.h \
@@ -756,7 +793,31 @@ debug/imagemanager.o: ../ESWalpappers/imagemanager.cpp ../ESWalpappers/imagemana
 		C:/Qt/5.3/mingw482_32/include/QtCore/qisenum.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/qobject_impl.h \
 		C:/Qt/5.3/mingw482_32/include/QtCore/qhash.h \
-		C:/Qt/5.3/mingw482_32/include/QtCore/qpair.h
+		C:/Qt/5.3/mingw482_32/include/QtCore/qpair.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/QDir \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qdir.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qfileinfo.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qfile.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qfiledevice.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qiodevice.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qstringlist.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qdatastream.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qregexp.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qstringmatcher.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/QSettings \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qsettings.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qvariant.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qmap.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qdebug.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qtextstream.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qlocale.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qvector.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qpoint.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qset.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qcontiguouscache.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/QTimer \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qtimer.h \
+		C:/Qt/5.3/mingw482_32/include/QtCore/qbasictimer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\imagemanager.o ..\ESWalpappers\imagemanager.cpp
 
 debug/qrc_resources.o: debug/qrc_resources.cpp 

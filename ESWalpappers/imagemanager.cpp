@@ -1,13 +1,26 @@
 #include "imagemanager.h"
 #include <windows.h>
 #include <iostream>
+#include <QSettings>
 ImageManager::ImageManager()
 {
+    this->currPreset = NULL;
+    this->timer = NULL;
+    QSettings regEdit(regPath, QSettings::NativeFormat);
+    regEdit.setValue("WallpaperStyle", "2");
+    regEdit.setValue("TileWallpaper", "0");
+}
+
+ImageManager::~ImageManager()
+{
+
 }
 
 void ImageManager::setPresets(std::vector<Config*> presets){
     this->presets = presets;
-    changeWallpaper();
+    if (timer != NULL)
+        if (timer->isActive())
+            timer->stop();
 }
 
 bool ImageManager::setCurrPreset(QString name){
@@ -15,18 +28,50 @@ bool ImageManager::setCurrPreset(QString name){
     for (std::vector<Config*>::iterator it = presets.begin(); it != presets.end(); it++){
         if (name == (*it)->getName()){
             currPreset = (*it);
+            changeWallpaper();
             exists = true;
+            break;
         }
     }
     return exists;
 }
 
-void ImageManager::changeWallpaper(){
+void ImageManager::nextWallpaper()
+{
+    changeWallpaper();
+}
 
-    /*if (bmp){
-        RegWriteString(HKEY_CURRENT_USER, "Control Panel\\Desktop", "WallpaperStyle", "2");
-        RegWriteString(HKEY_CURRENT_USER, "Control Panel\\Desktop", "TileWallpaper", "0");
+void ImageManager::setTimer(QTimer *timer)
+{
+    this->timer = timer;
+}
+
+bool ImageManager::changeWallpaper(){
+
+    if (currPreset == NULL) return false;
+
+    QSettings regEdit(regPath, QSettings::NativeFormat);
+    images = currPreset->getAllImages();
+    if (!images.isEmpty()){
+        QString img = getNextImage();
+        if (currPreset->getType() == Config::timelapse)
+            img = currPreset->getTimeFolder() + "\\" + img;
+        regEdit.setValue("Wallpaper", QFileInfo(imgPath + "\\" + currPreset->getFolder() + "\\" + img ).absoluteFilePath().replace("/", "\\"));
+        if (!timer->isActive()){
+            timer->start(currPreset->getTime()*1000);
+        } else {
+            timer->setInterval(currPreset->getTime()*1000);
+        }
+        return !SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, NULL, SPIF_SENDWININICHANGE);
     } else {
-    }*/
-    res = SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, (PVOID)"E:\ext_beach_day.bmp", SPIF_SENDCHANGE);
+        return false;
+    }
+}
+
+QString ImageManager::getNextImage()
+{
+    if (images.isEmpty()) return "";
+    srand(time(NULL));
+    int number = rand() % images.size();
+    return images[number];
 }

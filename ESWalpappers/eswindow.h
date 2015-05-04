@@ -9,6 +9,7 @@
 #include "configmanager.h"
 #include "config.h"
 #include "imagemanager.h"
+#include <QActionGroup>
 
 namespace Ui {
 class ESWindow;
@@ -30,17 +31,23 @@ private slots:
     void showTrayIcon();
     void updateConfigs();
     void setPreset();
+    void nextImage();
+    void autoLoadChange();
 
 private:
     Ui::ESWindow* ui;
     const QString iconPath = ":/icons/", iconFormat = ".png";
+    const QString iconDeactive = "icon_deactive", iconActive = "icon_active";
     /* сурсы */
     ConfigManager* confManager; //менеджер конфигов
     ImageManager* imgManager; //менеджер смены изображений
     /* части приложения */
+    QIcon trayActiveImage, trayDeactiveImage;
     QMenu* trayIconMenu; //контекстное меню приложения
     QSystemTrayIcon* trayIcon; //иконка приложения
+    QTimer* timer; //таймер для смены изображений
     /* пункты меню */
+    QActionGroup* filterGroup;
     std::vector<QAction*> filterActions; //действия для пользовательских пресетов
     QAction* autoLoadAction; //действие для пункта меню "добавить в автозагрузку"
     QAction* changeAction; //действие для пункта "следующие обои"
@@ -51,6 +58,8 @@ private:
     void bindActions();
     void clearFilterActions();
     QAction* getQActionFromConfig(Config* conf);
+
+    bool isInAutoload();
 
 };
 
