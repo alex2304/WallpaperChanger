@@ -24,12 +24,12 @@ private:
     /*компоненты*/
     std::vector<Config*> presets;
     Config* currPreset;
-    QString nextImg;
-    QStringList images;
+    QFileInfo* currImg;
+    QFileInfoList images;
     QTimer* timer;
     /*методы*/
     bool changeWallpaper();
-    QString getNextImage();
+    QFileInfo* getNextImage();
 };
 
 #endif // IMAGEMANAGER_H

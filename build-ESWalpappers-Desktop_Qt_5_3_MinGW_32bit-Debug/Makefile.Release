@@ -17,13 +17,13 @@ CXXFLAGS      = -pipe -fno-keep-inline-dllexport -O2 -frtti -Wall -Wextra -fexce
 INCPATH       = -I..\ESWalpappers -I"C:\Qt\5.3\mingw482_32\include" -I"C:\Qt\5.3\mingw482_32\include\QtWidgets" -I"C:\Qt\5.3\mingw482_32\include\QtGui" -I"C:\Qt\5.3\mingw482_32\include\QtCore" -I"release" -I"." -I"." -I"C:\Qt\5.3\mingw482_32\mkspecs\win32-g++"
 LINKER      =        g++
 LFLAGS        =        -Wl,-s -Wl,-subsystem,windows -mthreads
-LIBS        =        -lglu32 -lopengl32 -lgdi32 -luser32 -lmingw32 -LC:/Qt/5.3/mingw482_32/lib -lqtmain -LC:\mingw482\mingw32\lib -LC:\Utils\icu32_52_1_mingw482\lib -LC:\utils\postgresql\pgsql\lib -LC:\utils\mysql\mysql\lib -LC:\opensll\lib -LC:\Qt\5.3\mingw482_32/lib -lQt5Widgets -lQt5Gui -lQt5Core 
+LIBS        =        -lglu32 -lopengl32 -lgdi32 -luser32 -lmingw32 -LC:/Qt/5.3/mingw482_32/lib -lqtmain -LC:\mingw482\mingw32\lib -LC:\Utils\icu32_52_1_mingw482\lib -LC:\utils\postgresql\pgsql\lib -LC:\utils\mysql\mysql\lib -LC:\opensll\lib -LC:\Qt\5.3\mingw482_32/lib -L/libs -lQt5Widgets -lQt5Gui -lQt5Core release\info_res.o 
 QMAKE         = C:\Qt\5.3\mingw482_32\bin\qmake.exe
 IDC           = idc
 IDL           = midl
 ZIP           = zip -r -9
 DEF_FILE      = 
-RES_FILE      = 
+RES_FILE      = release\info_res.o
 COPY          = copy /y
 SED           = $(QMAKE) -install sed
 COPY_FILE     = $(COPY)
@@ -84,8 +84,11 @@ DESTDIR_TARGET = release\ESWalpappers.exe
 first: all
 all: Makefile.Release  $(DESTDIR_TARGET)
 
-$(DESTDIR_TARGET): ui_eswindow.h $(OBJECTS) 
+$(DESTDIR_TARGET): ui_eswindow.h $(OBJECTS) release/info_res.o
 	$(LINKER) $(LFLAGS) -o $(DESTDIR_TARGET) $(OBJECTS)  $(LIBS)
+
+release/info_res.o: ..\ESWalpappers\info.rc
+	windres -i ..\ESWalpappers\info.rc -o release\info_res.o --include-dir=./../ESWalpappers $(DEFINES)
 
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ CONFIG+=debug -o Makefile.Release ..\ESWalpappers\ESWalpappers.pro
@@ -97,6 +100,7 @@ dist:
 
 clean: compiler_clean 
 	-$(DEL_FILE) release\main.o release\eswindow.o release\configmanager.o release\config.o release\imagemanager.o release\qrc_resources.o release\moc_eswindow.o
+	-$(DEL_FILE) release\info_res.o
 
 distclean: clean 
 	-$(DEL_FILE) $(DESTDIR_TARGET)

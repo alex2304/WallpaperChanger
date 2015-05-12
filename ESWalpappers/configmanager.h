@@ -16,7 +16,6 @@ class IniMaster {
 
     friend class ConfigManager;
     static QString MAIN_SEC, TIMELAPSE_SEC;
-    //static const QString mValues[6], tValues[3];
     enum MainSec {
         name = 0, icon = 1,
         time = 2, folder = 3,

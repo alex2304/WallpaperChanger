@@ -86,23 +86,37 @@ QString Config::getNightFolder(){
     return nightFolder;
 }
 
-//возвращает список имён изображений, доступных для этого конфига
-QStringList Config::getAllImages()
+//возвращает список имён изображений относительно корневой папки изображений
+QFileInfoList Config::getAllImages()
 {
-    QStringList result;
+    QFileInfoList result;
     QDir dir;
     QString foldName = imgPath + "/" + folder; //имя папки с изображениями
     if (type == timelapse){
         foldName += getTimeFolder();
     }
-    if (!(dir.cd(foldName) && dir.isReadable())) return result; //установка пути к директории изображений и проверка существования каталога
-    dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks); //установка фильтров файлов
-    QStringList filters;
-    filters << "*.png" << "*.jpg" << "*.bmp";
-    dir.setNameFilters(QStringList(filters)); //установка типов файла
+
     dir.setSorting(QDir::Size | QDir::Reversed); //установка сортировки
-    result = dir.entryList(); //получение инфы об изображениях
+    getImagesRecursive(result, dir, foldName);
     return result;
+}
+
+void Config::getImagesRecursive(QFileInfoList& result, QDir& dir, QString path){
+    if (!(dir.cd(path) && dir.isReadable())) return;
+    dir.setFilter((QDir::Filters)imgFilter);
+    QStringList filtersImg;
+    filtersImg << "*.png" << "*.jpg" << "*.bmp";
+    dir.setNameFilters(QStringList(filtersImg)); //установка типов файла
+    result += dir.entryInfoList();
+
+    if (subfolders){
+        dir.setNameFilters(QStringList());
+        dir.setFilter((QDir::Filters)folderFilter);
+        QFileInfoList folders = dir.entryInfoList();
+        for (int i = 0; i < folders.size(); i++){
+            getImagesRecursive(result, dir, folders[i].absoluteFilePath());
+        }
+    }
 }
 
 

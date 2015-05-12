@@ -6,6 +6,7 @@ ImageManager::ImageManager()
 {
     this->currPreset = NULL;
     this->timer = NULL;
+    currImg = NULL;
     QSettings regEdit(regPath, QSettings::NativeFormat);
     regEdit.setValue("WallpaperStyle", "2");
     regEdit.setValue("TileWallpaper", "0");
@@ -13,7 +14,7 @@ ImageManager::ImageManager()
 
 ImageManager::~ImageManager()
 {
-
+    if (currImg != NULL) delete currImg;
 }
 
 void ImageManager::setPresets(std::vector<Config*> presets){
@@ -21,6 +22,7 @@ void ImageManager::setPresets(std::vector<Config*> presets){
     if (timer != NULL)
         if (timer->isActive())
             timer->stop();
+    currImg = NULL;
 }
 
 bool ImageManager::setCurrPreset(QString name){
@@ -53,10 +55,7 @@ bool ImageManager::changeWallpaper(){
     QSettings regEdit(regPath, QSettings::NativeFormat);
     images = currPreset->getAllImages();
     if (!images.isEmpty()){
-        QString img = getNextImage();
-        if (currPreset->getType() == Config::timelapse)
-            img = currPreset->getTimeFolder() + "\\" + img;
-        regEdit.setValue("Wallpaper", QFileInfo(imgPath + "\\" + currPreset->getFolder() + "\\" + img ).absoluteFilePath().replace("/", "\\"));
+        regEdit.setValue("Wallpaper", getNextImage()->absoluteFilePath().replace("/", "\\"));
         if (!timer->isActive()){
             timer->start(currPreset->getTime()*1000);
         } else {
@@ -68,10 +67,16 @@ bool ImageManager::changeWallpaper(){
     }
 }
 
-QString ImageManager::getNextImage()
+QFileInfo* ImageManager::getNextImage()
 {
-    if (images.isEmpty()) return "";
+    if (images.isEmpty()) return NULL;
+    if (images.size() == 1) return &images[0];
+
     srand(time(NULL));
-    int number = rand() % images.size();
-    return images[number];
+    int number;
+    do {
+        number = rand() % images.size();
+    } while (&images[number] == currImg);
+    currImg = &images[number];
+    return &images[number];
 }

@@ -16,16 +16,24 @@ public:
     };
 
 private:
+    const QString imgPath = "./img";
+    const int folderFilter = QDir::Dirs |
+                             QDir::NoSymLinks |
+                             QDir::NoDot |
+                             QDir::NoDotDot |
+                             QDir::NoDotAndDotDot,
+              imgFilter    = QDir::Files |
+                             QDir::Hidden |
+                             QDir::NoSymLinks;
     QString name, icon;
     int time;
     QString folder;
     bool subfolders;
     Type type;
     QString dayFolder, eveningFolder, nightFolder;
-    const QString imgPath = "./img";
-
+    QString getTimeFolder();
+    void getImagesRecursive(QFileInfoList& result, QDir& dir, QString path);
 public:
-    //static const QTime morning = QTime(7, 0), day = QTime(), evening = QTime(), night = QTime();
     Config(QString name, QString icon, int time, QString folder, bool subfolders, QString type);
     Config();
     void setName(QString name) ;
@@ -46,8 +54,7 @@ public:
     QString getDayFolder();
     QString getEveningFolder();
     QString getNightFolder();
-    QStringList getAllImages();
-    QString getTimeFolder();
+    QFileInfoList getAllImages();
 };
 
 class IncorrectConfigException: public exception

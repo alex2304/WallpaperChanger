@@ -25,7 +25,6 @@ ESWindow::ESWindow(QWidget *parent) :
 
 ESWindow::~ESWindow()
 {
-    delete ui;
     clearFilterActions();
     delete filterGroup;
     delete confManager;
@@ -36,7 +35,8 @@ ESWindow::~ESWindow()
     delete autoLoadAction;
     delete refreshAction;
     delete quitAction;
-    delete timer;
+    //delete timer;
+    delete ui;
 }
 
 void ESWindow::clearFilterActions(){
@@ -146,16 +146,16 @@ void ESWindow::showTrayIcon(){
     trayIcon->setContextMenu(trayIconMenu);
 
     //подключение обработчика клика по иконке...
-    connect(trayIcon,
+    /*connect(trayIcon,
             SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this,
-            SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+            SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason))); */
 
     //вывод значка...
     trayIcon->show();
 }
 
-void ESWindow::trayActionExecute()
+/*void ESWindow::trayActionExecute()
 {
     QMessageBox::information(this, "TrayIcon", "Тестовое сообщение. Замените вызов этого сообщения своим кодом.");
 }
@@ -183,18 +183,22 @@ void ESWindow::changeEvent(QEvent *event)
             this->hide();
         }
     }
-}
+} */
 
 bool ESWindow::isInAutoload(){
-    QSettings regEdit("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\CurrentVersion\\Run", QSettings::NativeFormat);
-    return (regEdit.value("ESWallpaper", "") != "");
+    QSettings regEdit(autoLoadPath, QSettings::NativeFormat);
+    return (regEdit.value("ESWallpaper", "").toString() != "");
 }
 
 void ESWindow::autoLoadChange(){
-    QSettings regEdit("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\CurrentVersion\\Run", QSettings::NativeFormat);
+    QSettings regEdit(autoLoadPath, QSettings::NativeFormat);
     if (autoLoadAction->isChecked()){
         QString path = QFileInfo("ESWallpaper.exe").absoluteFilePath().replace("/", "\\");
-        regEdit.setValue("ESWallpaper", path);
+        try {
+            regEdit.setValue("ESWallpaper", path);
+        } catch (const exception& e){
+            qWarning("Can't write to autoload");
+        }
     } else {
         regEdit.remove("ESWallpaper");
     }

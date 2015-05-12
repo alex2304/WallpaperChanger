@@ -24,9 +24,9 @@ public:
     ~ESWindow();
 
 private slots:
-    void changeEvent(QEvent*); //перехват события минимизации окна
+    /*void changeEvent(QEvent*); //перехват события минимизации окна
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason); //
-    void trayActionExecute();
+    void trayActionExecute();*/
     void buildTrayMenu(bool menuFromFile);
     void showTrayIcon();
     void updateConfigs();
@@ -38,6 +38,7 @@ private:
     Ui::ESWindow* ui;
     const QString iconPath = ":/icons/", iconFormat = ".png";
     const QString iconDeactive = "icon_deactive", iconActive = "icon_active";
+    const QString autoLoadPath = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
     /* сурсы */
     ConfigManager* confManager; //менеджер конфигов
     ImageManager* imgManager; //менеджер смены изображений

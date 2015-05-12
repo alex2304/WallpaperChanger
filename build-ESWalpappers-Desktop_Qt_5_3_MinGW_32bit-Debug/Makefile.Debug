@@ -17,13 +17,13 @@ CXXFLAGS      = -pipe -fno-keep-inline-dllexport -g -frtti -Wall -Wextra -fexcep
 INCPATH       = -I..\ESWalpappers -I"C:\Qt\5.3\mingw482_32\include" -I"C:\Qt\5.3\mingw482_32\include\QtWidgets" -I"C:\Qt\5.3\mingw482_32\include\QtGui" -I"C:\Qt\5.3\mingw482_32\include\QtCore" -I"debug" -I"." -I"." -I"C:\Qt\5.3\mingw482_32\mkspecs\win32-g++"
 LINKER      =        g++
 LFLAGS        =        -Wl,-subsystem,windows -mthreads
-LIBS        =        -lglu32 -lopengl32 -lgdi32 -luser32 -lmingw32 -LC:/Qt/5.3/mingw482_32/lib -lqtmaind -LC:\mingw482\mingw32\lib -LC:\Utils\icu32_52_1_mingw482\lib -LC:\utils\postgresql\pgsql\lib -LC:\utils\mysql\mysql\lib -LC:\opensll\lib -LC:\Qt\5.3\mingw482_32/lib -lQt5Widgetsd -lQt5Guid -lQt5Cored 
+LIBS        =        -lglu32 -lopengl32 -lgdi32 -luser32 -lmingw32 -LC:/Qt/5.3/mingw482_32/lib -lqtmaind -LC:\mingw482\mingw32\lib -LC:\Utils\icu32_52_1_mingw482\lib -LC:\utils\postgresql\pgsql\lib -LC:\utils\mysql\mysql\lib -LC:\opensll\lib -LC:\Qt\5.3\mingw482_32/lib -L/libs -lQt5Widgetsd -lQt5Guid -lQt5Cored debug\info_res.o 
 QMAKE         = C:\Qt\5.3\mingw482_32\bin\qmake.exe
 IDC           = idc
 IDL           = midl
 ZIP           = zip -r -9
 DEF_FILE      = 
-RES_FILE      = 
+RES_FILE      = debug\info_res.o
 COPY          = copy /y
 SED           = $(QMAKE) -install sed
 COPY_FILE     = $(COPY)
@@ -84,8 +84,11 @@ DESTDIR_TARGET = debug\ESWalpappers.exe
 first: all
 all: Makefile.Debug  $(DESTDIR_TARGET)
 
-$(DESTDIR_TARGET): ui_eswindow.h $(OBJECTS) 
+$(DESTDIR_TARGET): ui_eswindow.h $(OBJECTS) debug/info_res.o
 	$(LINKER) $(LFLAGS) -o $(DESTDIR_TARGET) $(OBJECTS)  $(LIBS)
+
+debug/info_res.o: ..\ESWalpappers\info.rc
+	windres -i ..\ESWalpappers\info.rc -o debug\info_res.o --include-dir=./../ESWalpappers $(DEFINES)
 
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ CONFIG+=debug -o Makefile.Debug ..\ESWalpappers\ESWalpappers.pro
@@ -97,6 +100,7 @@ dist:
 
 clean: compiler_clean 
 	-$(DEL_FILE) debug\main.o debug\eswindow.o debug\configmanager.o debug\config.o debug\imagemanager.o debug\qrc_resources.o debug\moc_eswindow.o
+	-$(DEL_FILE) debug\info_res.o
 
 distclean: clean 
 	-$(DEL_FILE) $(DESTDIR_TARGET)
