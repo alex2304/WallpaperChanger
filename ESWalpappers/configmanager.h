@@ -39,7 +39,7 @@ private:
     /* работа с файлами конфигурации */
     QDir dir; //папка с файлами конфигурации
     std::vector<Config*> configs; //список конфигураций
-    QTextCodec *codec; //кодек для кодирования файлов конфигураций
+    QTextCodec* codec; //кодек для кодирования файлов конфигураций
 
     Config* getConfigFromFile(QString filename);
     bool checkConfigFile(QSettings& confFile);

@@ -55,11 +55,12 @@ private:
     QAction* refreshAction; //действие для пункта "обновить"
     QAction* quitAction; //действие для пункта меню "выход"
 
+    /* приватные методы */
+    void initiallizeDynamicComponents();
     void buildActions(std::vector<Config*> configs);
     void bindActions();
     void clearFilterActions();
     QAction* getQActionFromConfig(Config* conf);
-
     bool isInAutoload();
 
 };

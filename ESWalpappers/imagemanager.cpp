@@ -6,7 +6,6 @@ ImageManager::ImageManager()
 {
     this->currPreset = NULL;
     this->timer = NULL;
-    currImg = NULL;
     QSettings regEdit(regPath, QSettings::NativeFormat);
     regEdit.setValue("WallpaperStyle", "2");
     regEdit.setValue("TileWallpaper", "0");
@@ -14,7 +13,6 @@ ImageManager::ImageManager()
 
 ImageManager::~ImageManager()
 {
-    if (currImg != NULL) delete currImg;
 }
 
 void ImageManager::setPresets(std::vector<Config*> presets){
@@ -22,7 +20,8 @@ void ImageManager::setPresets(std::vector<Config*> presets){
     if (timer != NULL)
         if (timer->isActive())
             timer->stop();
-    currImg = NULL;
+    currImg = "";
+    currPreset = NULL;
 }
 
 bool ImageManager::setCurrPreset(QString name){
@@ -74,9 +73,13 @@ QFileInfo* ImageManager::getNextImage()
 
     srand(time(NULL));
     int number;
-    do {
-        number = rand() % images.size();
-    } while (&images[number] == currImg);
-    currImg = &images[number];
+    try {
+        do {
+            number = rand() % images.size();
+        } while (images[number].fileName() == currImg);
+    } catch (const exception& e){
+        return NULL;
+    }
+    currImg = images[number].fileName();
     return &images[number];
 }

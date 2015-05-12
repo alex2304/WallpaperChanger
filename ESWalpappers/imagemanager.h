@@ -24,7 +24,7 @@ private:
     /*компоненты*/
     std::vector<Config*> presets;
     Config* currPreset;
-    QFileInfo* currImg;
+    QString currImg;
     QFileInfoList images;
     QTimer* timer;
     /*методы*/
