@@ -1,0 +1,37 @@
+pkgname=es_wallpaper
+pkgver=1.0.1
+pkgrel=1
+pkgdir=~/alexey/Documents/es_wallpaper
+epoch=1
+pkgdesc="Simple and functional desktop wallpaper manager"
+arch=('x86_64' 'i686')
+url="https://github.com/alex2304/WallpaperChanger"
+license=('GPL')
+depends=()
+optdepends=()
+makedepends=()
+checkdepends=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+source=()
+
+build() {
+  #cd "~/${srcdir}/${pkgname}"
+  #cmake ./ -DCMAKE_INSTALL_PREFIX=/usr
+  #make
+  
+  cd ./
+}
+
+package() {
+  mkdir -p "$pkgdir/opt/$pkgname/"
+  chmod 755 "$pkgdir/opt/$pkgname"
+  chown -R `$USER`:users "$pkgdir/opt/$pkgname"
+  ls
+  cd ../source
+  cp -r "./ESWallpaper" "$pkgdir/opt/$pkgname/ESWallpaper"
+  cp -r ./{res,conf,img} "$pkgdir/opt/$pkgname/"
+  chmod +x "$pkgdir/opt/$pkgname/ESWallpaper"
+}
